@@ -11,7 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -67,37 +71,34 @@ public class GlassDetectionController {
         return ResponseEntity.ok("Image uploaded with ID: " + fileId.toString());
     }
 
-    @PostMapping("/detect/{imageId}")
-    public ResponseEntity<String> detectGlass(@PathVariable String imageId) {
-        List<BoundingBox> boundingBoxes = Arrays.asList(
-                new BoundingBox(50, 60, 100, 120),
-                new BoundingBox(200, 150, 90, 100)
-        );
+    @GetMapping(value = "/download/by-filename/{filename}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @Operation(
+            summary = "Download an image by filename",
+            description = "Fetches the latest uploaded image from MongoDB using the filename."
+    )
+    @ApiResponse(responseCode = "200", description = "Image retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "Image not found")
+    public ResponseEntity<?> downloadImageByFilename(@PathVariable String filename) {
+        try {
+            // Find the latest file with the given filename
+            GridFSFile file = gridFsTemplate.findOne(
+                    Query.query(Criteria.where("filename").is(filename))
+                            .with(Sort.by(Sort.Direction.DESC, "uploadDate")) // Get the most recent one
+            );
 
-        DetectionResult result = new DetectionResult(imageId, boundingBoxes);
-        detectionService.saveDetectionResult(result);
+            if (file == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found with filename: " + filename);
+            }
 
-        return ResponseEntity.ok("Detection completed for imageId: " + imageId);
-    }
+            GridFsResource resource = gridFsOperations.getResource(file);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(file.getMetadata().getString("_contentType")))
+                    .body(new InputStreamResource(resource.getInputStream()));
 
-    @GetMapping("/results/{imageId}")
-    public ResponseEntity<DetectionResult> getDetectionResults(@PathVariable String imageId) {
-        Optional<DetectionResult> result = detectionService.getDetectionResult(imageId);
-        return result.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
-    }
-
-    @GetMapping("/image/{id}")
-    public ResponseEntity<InputStreamResource> getImage(@PathVariable String id) throws IOException {
-        GridFSFile gridFSFile = gridFsTemplate.findOne(new org.springframework.data.mongodb.core.query.Query().addCriteria(org.springframework.data.mongodb.core.query.Criteria.where("_id").is(id)));
-
-        if (gridFSFile == null) {
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving the image.");
         }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + gridFSFile.getFilename() + "\"")
-                .body(new InputStreamResource(gridFsOperations.getResource(gridFSFile).getInputStream()));
     }
+
+
 }
