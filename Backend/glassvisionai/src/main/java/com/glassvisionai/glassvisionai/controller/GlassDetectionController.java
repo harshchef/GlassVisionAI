@@ -2,7 +2,9 @@ package com.glassvisionai.glassvisionai.controller;
 
 import com.glassvisionai.glassvisionai.entity.BoundingBox;
 import com.glassvisionai.glassvisionai.entity.DetectionResult;
+import com.glassvisionai.glassvisionai.entity.User;
 import com.glassvisionai.glassvisionai.service.DetectionService;
+import com.glassvisionai.glassvisionai.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -45,6 +47,8 @@ public class GlassDetectionController {
     @Autowired
     private DetectionService detectionService;
 
+    @Autowired
+    private UserService userService;
 
     @Operation(
             summary = "Upload an image",
@@ -100,5 +104,55 @@ public class GlassDetectionController {
         }
     }
 
+
+    @GetMapping(value = "/user-image/{username}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<?> getUserImage(@PathVariable String username) throws IOException {
+        Optional<User> optionalUser = Optional.ofNullable(userService.findByUsername(username));
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (user.getImageId() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User has no uploaded image");
+            }
+
+            GridFSFile file = gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(user.getImageId())));
+            if (file == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image not found in database");
+            }
+
+            GridFsResource resource = gridFsOperations.getResource(file);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(file.getMetadata().getString("_contentType")))
+                    .body(new InputStreamResource(resource.getInputStream()));
+
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
+    @PostMapping(value = "/upload/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadImage(
+            @PathVariable String username,
+            @RequestParam("file") MultipartFile file
+    ) throws IOException {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty. Please upload a valid file.");
+        }
+
+        System.out.println("/upload is triggered");
+
+        ObjectId fileId = gridFsTemplate.store(file.getInputStream(), file.getOriginalFilename(), file.getContentType());
+
+        // Find user by username and update with image details
+        Optional<User> optionalUser = Optional.ofNullable(userService.findByUsername(username));
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setImageId(fileId.toString());
+            user.setImageName(file.getOriginalFilename());
+            userService.updateUser(user); // Save changes
+            return ResponseEntity.ok("Image uploaded and linked to user with username: " + username);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
 
 }
