@@ -35,6 +35,7 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/swagger-ui.html"), // Swagger UI Entry
                                 new AntPathRequestMatcher("/login"),
                                 new AntPathRequestMatcher("/register"),
+                                new AntPathRequestMatcher("/api/**"),
                                 new AntPathRequestMatcher("/api/glass/**")
                         ).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/contact")).authenticated()
