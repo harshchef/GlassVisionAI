@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HelpDeskResponse {
+public class AuthResponse {
     String result;
 
     // all-arg constructor
