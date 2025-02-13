@@ -1,7 +1,5 @@
 package com.glassvisionai.glassvisionai.controller;
 
-import com.glassvisionai.glassvisionai.entity.BoundingBox;
-import com.glassvisionai.glassvisionai.entity.DetectionResult;
 import com.glassvisionai.glassvisionai.entity.User;
 import com.glassvisionai.glassvisionai.service.DetectionService;
 import com.glassvisionai.glassvisionai.service.UserService;
