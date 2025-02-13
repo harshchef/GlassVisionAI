@@ -37,7 +37,8 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/register"),
                                 new AntPathRequestMatcher("/api/**"),
                                 new AntPathRequestMatcher("/api/glass/**"),
-                                new AntPathRequestMatcher("/api/detect/**")
+                                new AntPathRequestMatcher("/api/detect/**"),
+                                new AntPathRequestMatcher("/images/upload/**")
 
 
                         ).permitAll()
