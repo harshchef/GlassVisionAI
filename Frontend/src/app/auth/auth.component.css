@@ -1,0 +1,90 @@
+/* Full-Screen Background */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: url('/assets/img_6.png') no-repeat center bottom;
+  background-size: cover;
+  position: relative; /* Ensure it positions correctly */
+}
+
+
+
+/* Semi-Transparent Glass Effect */
+.auth-card {
+  width: 420px;
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Background Overlay */
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
+}
+
+/* Form Inputs */
+.full-width {
+  width: 100%;
+}
+
+/* Auth Button */
+.auth-button {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Social Login Buttons */
+.social-login {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.google-btn {
+  background: #db4437;
+  color: white;
+}
+
+.facebook-btn {
+  background: #4267b2;
+  color: white;
+}
+
+/* Toggle Text */
+.toggle-text {
+  margin-top: 15px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: bold;
+}
+
+.toggle-text:hover {
+  text-decoration: underline;
+}
+
+/* Fade-In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

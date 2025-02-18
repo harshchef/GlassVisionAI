@@ -1,0 +1,27 @@
+<div class="upload-container">
+
+  <mat-card class="upload-card">
+
+    <h2>Upload an Image</h2>
+
+    <!-- File Input Button -->
+    <label class="file-input">
+      <input type="file" accept="image/*" (change)="onFileSelected($event)">
+      <mat-icon>upload</mat-icon> Choose a File
+    </label>
+
+    <!-- Drag and Drop Zone -->
+    <div class="drop-zone" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+      <mat-icon class="upload-icon">cloud_upload</mat-icon>
+      <p>Drag & drop an image here</p>
+    </div>
+
+    <!-- Preview Image -->
+    <div class="image-preview" *ngIf="imagePreview">
+      <img [src]="imagePreview" alt="Uploaded Image">
+      <button mat-icon-button color="warn" (click)="removeImage()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </mat-card>
+</div>
