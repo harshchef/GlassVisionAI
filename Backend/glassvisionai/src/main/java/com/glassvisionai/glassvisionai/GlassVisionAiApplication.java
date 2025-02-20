@@ -7,8 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.web.client.RestTemplate;
 
-//
-//@ComponentScan(basePackages = {"com.glassvisionai.glassvisionai.services"})
+
 @SpringBootApplication
 public class GlassVisionAiApplication {
 

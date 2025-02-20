@@ -1,0 +1,14 @@
+<div class="prediction-container" *ngIf="imageSrc">
+  <img [src]="imageSrc" alt="Predicted Image" class="image">
+
+  <div
+    class="bounding-box"
+    *ngIf="prediction"
+    [ngStyle]="{
+      left: prediction.x + 'px',
+      top: prediction.y + 'px',
+      width: prediction.width + 'px',
+      height: prediction.height + 'px'
+    }"
+  ></div>
+</div>
