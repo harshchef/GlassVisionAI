@@ -1,0 +1,15 @@
+.prediction-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image {
+  max-width: 100%;
+  height: auto;
+}
+
+.bounding-box {
+  position: absolute;
+  border: 2px solid red;
+  background-color: rgba(255, 0, 0, 0.2);
+}

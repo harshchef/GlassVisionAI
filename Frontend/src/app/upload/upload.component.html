@@ -1,7 +1,5 @@
 <div class="upload-container">
-
   <mat-card class="upload-card">
-
     <h2>Upload an Image</h2>
 
     <!-- File Input Button -->
@@ -16,9 +14,10 @@
       <p>Drag & drop an image here</p>
     </div>
 
-    <!-- Preview Image -->
+    <!-- Preview Image & Predictions -->
     <div class="image-preview" *ngIf="imagePreview">
-      <img [src]="imagePreview" alt="Uploaded Image">
+      <app-plot-prediction [imageSrc]="imagePreview" [prediction]="firstPrediction"></app-plot-prediction>
+
       <button mat-icon-button color="warn" (click)="removeImage()">
         <mat-icon>delete</mat-icon>
       </button>
