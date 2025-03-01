@@ -17,10 +17,10 @@
     <!-- Preview Image & Predictions -->
     <div class="image-preview" *ngIf="imagePreview">
       <app-plot-prediction [imageSrc]="imagePreview" [prediction]="firstPrediction"></app-plot-prediction>
-
       <button mat-icon-button color="warn" (click)="removeImage()">
         <mat-icon>delete</mat-icon>
       </button>
     </div>
+
   </mat-card>
 </div>

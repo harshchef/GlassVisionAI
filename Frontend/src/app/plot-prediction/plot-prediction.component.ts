@@ -10,6 +10,5 @@ import { CommonModule } from '@angular/common';
 })
 export class PlotPredictionComponent {
   @Input() imageSrc: string | null = null;
-  @Input() prediction: { x: number, y: number, width: number, height: number } | null = null;
+  @Input() prediction: { x_min: number, y_min: number, x_max: number, y_max: number } | null = null;
 }
-

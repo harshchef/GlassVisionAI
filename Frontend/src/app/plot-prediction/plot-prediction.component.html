@@ -1,14 +1,14 @@
-<div class="prediction-container" *ngIf="imageSrc">
-  <img [src]="imageSrc" alt="Predicted Image" class="image">
+<div class="image-container" *ngIf="imageSrc && prediction">
+  <img [src]="imageSrc" alt="Predicted Image">
 
+  <!-- Bounding Box Overlay -->
   <div
     class="bounding-box"
-    *ngIf="prediction"
     [ngStyle]="{
-      left: prediction.x + 'px',
-      top: prediction.y + 'px',
-      width: prediction.width + 'px',
-      height: prediction.height + 'px'
+      top: prediction.y_min + 'px',
+      left: prediction.x_min + 'px',
+      width: (prediction.x_max - prediction.x_min) + 'px',
+      height: (prediction.y_max - prediction.y_min) + 'px'
     }"
   ></div>
 </div>

@@ -1,42 +1,48 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon'
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'; // ✅ Import MatSnackBarModule
-import { Router } from '@angular/router'; // ✅ Import Router
-
+import { MatIconModule } from '@angular/material/icon';
+import { HttpClientModule } from '@angular/common/http';
 @Component({
   selector: 'app-auth',
   standalone: true,
-   imports: [
-      CommonModule,
-      FormsModule,
-      ReactiveFormsModule,
-      MatCardModule,        // ✅ Angular Material Card
-      MatFormFieldModule,   // ✅ Material Form Field
-      MatInputModule,       // ✅ Material Input
-      MatButtonModule,      // ✅ Material Button
-      MatIconModule,
-
-    ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    HttpClientModule,
+  ],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css'],
 })
 export class AuthComponent {
   authForm: FormGroup;
-  isLogin = true; // Toggle between login and register
+  isLogin = true;
+  private apiUrl = 'http://localhost:8081';
 
-  constructor(private fb: FormBuilder,
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
     private snackBar: MatSnackBar,
-    private router: Router) {
+    private router: Router
+  ) {
     this.authForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: [''], // Only used in register mode
+      confirmPassword: [''],
     });
   }
 
@@ -50,15 +56,37 @@ export class AuthComponent {
       return;
     }
 
-    console.log(this.isLogin ? 'Logging in...' : 'Registering...', this.authForm.value);
-
-  // ✅ Redirect to /upload after login
     if (this.isLogin) {
-      this.router.navigate(['/upload']);
+      this.login(email, password);
     } else {
-      this.snackBar.open("Registration successful! Please log in.", 'Close', { duration: 2000 });
-      this.isLogin = true; // Switch to login mode after registration
+      this.register(email, password);
     }
+  }
+
+  login(email: string, password: string) {
+    this.http.post<any>(`${this.apiUrl}/login`, { username: email, password }).subscribe(
+      (response) => {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('userId', response.userId);
+        this.snackBar.open('Login successful!', 'Close', { duration: 2000 });
+        this.router.navigate(['/upload']);
+      },
+      (error) => {
+        this.snackBar.open('Login failed: Invalid credentials', 'Close', { duration: 2000 });
+      }
+    );
+  }
+
+  register(email: string, password: string) {
+    this.http.post<any>(`${this.apiUrl}/register`, { username: email, password }).subscribe(
+      () => {
+        this.snackBar.open('Registration successful! Please log in.', 'Close', { duration: 2000 });
+        this.isLogin = true;
+      },
+      (error) => {
+        this.snackBar.open('Registration failed: ' + error.error, 'Close', { duration: 2000 });
+      }
+    );
   }
 
   toggleMode() {
@@ -70,4 +98,3 @@ export class AuthComponent {
     }
   }
 }
-
