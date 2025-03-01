@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = "Glass Detection", description = "APIs for Glass Detection")  // Updated tag
